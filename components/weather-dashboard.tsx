@@ -230,21 +230,21 @@ export default function WeatherDashboard() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 text-center animate-fade-in">
-          <h1 className="text-4xl font-bold text-black dark:text-white mb-2 transition-colors duration-300">
+          <h1 className="text-2xl md:text-4xl font-bold text-black dark:text-white mb-2 transition-colors duration-300">
             Jakarta Weather
           </h1>
-          <p className="text-black/70 dark:text-white/80 text-lg transition-colors duration-300">
+          <p className="text-black/70 dark:text-white/80 text-base md:text-lg transition-colors duration-300">
             {weatherData.location.name}, {weatherData.location.region}
           </p>
         </div>
 
         {/* Main Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
           {/* Main Weather Card - Takes up more space */}
-          <div className="lg:col-span-8 bg-white rounded-3xl p-8 border shadow-xl animate-slide-in-left">
-            <div className="mb-6">
-              <div className="text-black text-xl font-semibold mb-2">Current Weather</div>
-              <div className="text-black/70 text-base">
+          <div className="lg:col-span-8 bg-white rounded-3xl p-4 md:p-8 border shadow-xl animate-slide-in-left">
+            <div className="mb-4 md:mb-6">
+              <div className="text-black text-base md:text-xl font-semibold mb-1 md:mb-2">Current Weather</div>
+              <div className="text-black/70 text-xs md:text-base">
                 Last updated: {lastUpdated.toLocaleTimeString("en-US", {
                   hour: "numeric",
                   minute: "2-digit",
@@ -253,44 +253,42 @@ export default function WeatherDashboard() {
               </div>
             </div>
 
-            <div className="flex items-center gap-12 mb-8">
+            <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-12 mb-6 md:mb-8">
               <div className="animate-bounce-gentle">
                 {getWeatherIcon(weatherData.current.condition.text)}
               </div>
-              <div className="animate-slide-in-right">
-                <div className="text-black text-8xl font-light mb-2">
+              <div className="animate-slide-in-right text-center sm:text-left">
+                <div className="text-black text-5xl md:text-8xl font-light mb-1 md:mb-2">
                   {Math.round(temp)}°{unit}
                 </div>
-                <div className="text-black text-3xl font-medium mb-2">{weatherData.current.condition.text}</div>
-                <div className="text-black/70 text-xl">
-                  Feels like{" "}
-                  {Math.round(unit === "C" ? weatherData.current.feelslike_c : weatherData.current.feelslike_f)}°{unit}
+                <div className="text-black text-xl md:text-3xl font-medium mb-1 md:mb-2">{weatherData.current.condition.text}</div>
+                <div className="text-black/70 text-base md:text-xl">
+                  Feels like {Math.round(unit === "C" ? weatherData.current.feelslike_c : weatherData.current.feelslike_f)}°{unit}
                 </div>
               </div>
             </div>
 
-            <div className="text-black/80 text-lg leading-relaxed animate-fade-in-up">
-              Expect {weatherData.current.condition.text.toLowerCase()} The temperature will reach{" "}
-              {Math.round(temp + 2)}°{unit} .
+            <div className="text-black/80 text-base md:text-lg leading-relaxed animate-fade-in-up text-center md:text-left">
+              Expect {weatherData.current.condition.text.toLowerCase()} The temperature will reach {Math.round(temp + 2)}°{unit} .
             </div>
 
             {/* Mini stats within main card */}
-            <div className="grid grid-cols-2 gap-4 mt-8">
-              <div className="bg-blue-50 rounded-2xl p-4 animate-scale-in" style={{animationDelay: '0.3s'}}>
-                <div className="flex items-center gap-2 mb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-4 mt-6 md:mt-8">
+              <div className="bg-blue-50 rounded-2xl p-3 md:p-4 animate-scale-in" style={{animationDelay: '0.3s'}}>
+                <div className="flex items-center gap-2 mb-1 md:mb-2">
                   <Thermometer className="w-4 h-4 text-blue-500" />
-                  <span className="text-black/70 text-sm font-medium">Temperature Range</span>
+                  <span className="text-black/70 text-xs md:text-sm font-medium">Temperature Range</span>
                 </div>
-                <div className="text-black text-lg font-semibold">
+                <div className="text-black text-base md:text-lg font-semibold">
                   {Math.round(temp - 3)}° - {Math.round(temp + 3)}°{unit}
                 </div>
               </div>
-              <div className="bg-green-50 rounded-2xl p-4 animate-scale-in" style={{animationDelay: '0.4s'}}>
-                <div className="flex items-center gap-2 mb-2">
+              <div className="bg-green-50 rounded-2xl p-3 md:p-4 animate-scale-in" style={{animationDelay: '0.4s'}}>
+                <div className="flex items-center gap-2 mb-1 md:mb-2">
                   <Wind className="w-4 h-4 text-green-500" />
-                  <span className="text-black/70 text-sm font-medium">Wind Condition</span>
+                  <span className="text-black/70 text-xs md:text-sm font-medium">Wind Condition</span>
                 </div>
-                <div className="text-black text-lg font-semibold">
+                <div className="text-black text-base md:text-lg font-semibold">
                   {weatherData.current.wind_mph < 10 ? "Light breeze" : weatherData.current.wind_mph < 20 ? "Moderate" : "Strong"}
                 </div>
               </div>
@@ -298,14 +296,14 @@ export default function WeatherDashboard() {
           </div>
 
           {/* Side Panel - Unit Control & Quick Stats */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-4 space-y-4 md:space-y-6">
             {/* Unit Toggle Card - Bigger */}
-            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xl animate-slide-in-right">
-              <div className="text-black text-lg font-semibold mb-4">Temperature Unit</div>
-              <div className="flex gap-3 mb-6">
+            <div className="bg-white rounded-3xl p-4 md:p-6 border border-gray-200 shadow-xl animate-slide-in-right">
+              <div className="text-black text-base md:text-lg font-semibold mb-2 md:mb-4">Temperature Unit</div>
+              <div className="flex gap-2 md:gap-3 mb-4 md:mb-6">
                 <button
                   onClick={() => setUnit("C")}
-                  className={`flex-1 px-6 py-3 rounded-xl text-base font-medium transition-all transform hover:scale-105 ${
+                  className={`flex-1 px-3 py-2 md:px-6 md:py-3 rounded-xl text-sm md:text-base font-medium transition-all transform hover:scale-105 ${
                     unit === "C" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-100 text-black/70 hover:bg-gray-200"
                   }`}
                 >
@@ -313,34 +311,34 @@ export default function WeatherDashboard() {
                 </button>
                 <button
                   onClick={() => setUnit("F")}
-                  className={`flex-1 px-6 py-3 rounded-xl text-base font-medium transition-all transform hover:scale-105 ${
+                  className={`flex-1 px-3 py-2 md:px-6 md:py-3 rounded-xl text-sm md:text-base font-medium transition-all transform hover:scale-105 ${
                     unit === "F" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-100 text-black/70 hover:bg-gray-200"
                   }`}
                 >
                   Fahrenheit
                 </button>
               </div>
-              <div className="text-black/70 text-sm">
+              <div className="text-black/70 text-xs md:text-sm">
                 Data refreshes every 3 minutes automatically
               </div>
             </div>
 
             {/* Humidity Card - Bigger with more detail */}
-            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xl animate-slide-in-right" style={{animationDelay: '0.2s'}}>
-              <div className="flex items-center gap-2 mb-4">
-                <Droplets className="w-5 h-5 text-blue-500 animate-pulse" />
-                <div className="text-black text-lg font-semibold">Humidity</div>
+            <div className="bg-white rounded-3xl p-4 md:p-6 border border-gray-200 shadow-xl animate-slide-in-right" style={{animationDelay: '0.2s'}}>
+              <div className="flex items-center gap-2 mb-2 md:mb-4">
+                <Droplets className="w-4 h-4 md:w-5 md:h-5 text-blue-500 animate-pulse" />
+                <div className="text-black text-base md:text-lg font-semibold">Humidity</div>
               </div>
-              <div className="text-black text-4xl font-light mb-4">{humidity}%</div>
-              <div className="relative mb-4">
-                <div className="w-full h-3 bg-black/20 rounded-full">
+              <div className="text-black text-2xl md:text-4xl font-light mb-2 md:mb-4">{humidity}%</div>
+              <div className="relative mb-2 md:mb-4">
+                <div className="w-full h-2 md:h-3 bg-black/20 rounded-full">
                   <div
-                    className="h-3 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-1000 animate-width-expand"
+                    className="h-2 md:h-3 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-1000 animate-width-expand"
                     style={{ width: `${humidity}%` }}
                   ></div>
                 </div>
               </div>
-              <div className="text-black/70 text-sm">
+              <div className="text-black/70 text-xs md:text-sm">
                 {humidity > 70 ? "High humidity - feels muggy" : humidity > 40 ? "Comfortable humidity" : "Low humidity"}
               </div>
             </div>
@@ -348,57 +346,57 @@ export default function WeatherDashboard() {
         </div>
 
         {/* Bottom Row - Larger Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-4 md:mt-6">
           {/* Wind Speed Card - Bigger */}
-          <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xl animate-slide-in-up hover:shadow-2xl transition-all duration-300 hover:-translate-y-2" style={{animationDelay: '0.1s'}}>
-            <div className="flex items-center gap-2 mb-4">
-              <Wind className="w-5 h-5 text-gray-600 animate-spin-slow" />
-              <div className="text-black text-lg font-semibold">Wind Speed</div>
+          <div className="bg-white rounded-3xl p-4 md:p-6 border border-gray-200 shadow-xl animate-slide-in-up hover:shadow-2xl transition-all duration-300 hover:-translate-y-2" style={{animationDelay: '0.1s'}}>
+            <div className="flex items-center gap-2 mb-2 md:mb-4">
+              <Wind className="w-4 h-4 md:w-5 md:h-5 text-gray-600 animate-spin-slow" />
+              <div className="text-black text-base md:text-lg font-semibold">Wind Speed</div>
             </div>
-            <div className="text-black text-4xl font-light mb-2 animate-count-up">{Math.round(weatherData.current.wind_mph)}</div>
-            <div className="text-black/70 text-base mb-2">mph</div>
-            <div className="text-black/70 text-sm">
+            <div className="text-black text-2xl md:text-4xl font-light mb-1 md:mb-2 animate-count-up">{Math.round(weatherData.current.wind_mph)}</div>
+            <div className="text-black/70 text-xs md:text-base mb-1 md:mb-2">mph</div>
+            <div className="text-black/70 text-xs md:text-sm">
               {weatherData.current.wind_kph.toFixed(1)} km/h
             </div>
           </div>
 
           {/* Visibility Card - Bigger */}
-          <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xl animate-slide-in-up hover:shadow-2xl transition-all duration-300 hover:-translate-y-2" style={{animationDelay: '0.2s'}}>
-            <div className="flex items-center gap-2 mb-4">
-              <Eye className="w-5 h-5 text-gray-600 animate-blink" />
-              <div className="text-black text-lg font-semibold">Visibility</div>
+          <div className="bg-white rounded-3xl p-4 md:p-6 border border-gray-200 shadow-xl animate-slide-in-up hover:shadow-2xl transition-all duration-300 hover:-translate-y-2" style={{animationDelay: '0.2s'}}>
+            <div className="flex items-center gap-2 mb-2 md:mb-4">
+              <Eye className="w-4 h-4 md:w-5 md:h-5 text-gray-600 animate-blink" />
+              <div className="text-black text-base md:text-lg font-semibold">Visibility</div>
             </div>
-            <div className="text-black text-4xl font-light mb-2 animate-count-up">{weatherData.current.vis_miles}</div>
-            <div className="text-black/70 text-base mb-2">miles</div>
-            <div className="text-black/70 text-sm">
+            <div className="text-black text-2xl md:text-4xl font-light mb-1 md:mb-2 animate-count-up">{weatherData.current.vis_miles}</div>
+            <div className="text-black/70 text-xs md:text-base mb-1 md:mb-2">miles</div>
+            <div className="text-black/70 text-xs md:text-sm">
               {weatherData.current.vis_km} km
             </div>
           </div>
 
           {/* Pressure Card - Bigger */}
-          <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xl animate-slide-in-up hover:shadow-2xl transition-all duration-300 hover:-translate-y-2" style={{animationDelay: '0.3s'}}>
-            <div className="flex items-center gap-2 mb-4">
-              <Gauge className="w-5 h-5 text-gray-600 animate-pulse" />
-              <div className="text-black text-lg font-semibold">Pressure</div>
+          <div className="bg-white rounded-3xl p-4 md:p-6 border border-gray-200 shadow-xl animate-slide-in-up hover:shadow-2xl transition-all duration-300 hover:-translate-y-2" style={{animationDelay: '0.3s'}}>
+            <div className="flex items-center gap-2 mb-2 md:mb-4">
+              <Gauge className="w-4 h-4 md:w-5 md:h-5 text-gray-600 animate-pulse" />
+              <div className="text-black text-base md:text-lg font-semibold">Pressure</div>
             </div>
-            <div className="text-black text-4xl font-light mb-2 animate-count-up">{weatherData.current.pressure_in.toFixed(1)}</div>
-            <div className="text-black/70 text-base mb-2">inHg</div>
-            <div className="text-black/70 text-sm">
+            <div className="text-black text-2xl md:text-4xl font-light mb-1 md:mb-2 animate-count-up">{weatherData.current.pressure_in.toFixed(1)}</div>
+            <div className="text-black/70 text-xs md:text-base mb-1 md:mb-2">inHg</div>
+            <div className="text-black/70 text-xs md:text-sm">
               {Math.round(weatherData.current.pressure_mb)} mb
             </div>
           </div>
 
           {/* Feels Like Card - Bigger */}
-          <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xl animate-slide-in-up hover:shadow-2xl transition-all duration-300 hover:-translate-y-2" style={{animationDelay: '0.4s'}}>
-            <div className="flex items-center gap-2 mb-4">
-              <Thermometer className="w-5 h-5 text-gray-600 animate-pulse" />
-              <div className="text-black text-lg font-semibold">Feels Like</div>
+          <div className="bg-white rounded-3xl p-4 md:p-6 border border-gray-200 shadow-xl animate-slide-in-up hover:shadow-2xl transition-all duration-300 hover:-translate-y-2" style={{animationDelay: '0.4s'}}>
+            <div className="flex items-center gap-2 mb-2 md:mb-4">
+              <Thermometer className="w-4 h-4 md:w-5 md:h-5 text-gray-600 animate-pulse" />
+              <div className="text-black text-base md:text-lg font-semibold">Feels Like</div>
             </div>
-            <div className="text-black text-4xl font-light mb-2 animate-count-up">
+            <div className="text-black text-2xl md:text-4xl font-light mb-1 md:mb-2 animate-count-up">
               {Math.round(unit === "C" ? weatherData.current.feelslike_c : weatherData.current.feelslike_f)}°
             </div>
-            <div className="text-black/70 text-base mb-2">{unit === "C" ? "Celsius" : "Fahrenheit"}</div>
-            <div className="text-black/70 text-sm">
+            <div className="text-black/70 text-xs md:text-base mb-1 md:mb-2">{unit === "C" ? "Celsius" : "Fahrenheit"}</div>
+            <div className="text-black/70 text-xs md:text-sm">
               Heat index perception
             </div>
           </div>

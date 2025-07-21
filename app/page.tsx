@@ -89,7 +89,7 @@ const DashboardTop = React.memo(() => {
   const { sensorData, isSensorConnected } = useSensor();
 
   return (
-    <div className="relative w-full min-h-[480px] rounded-2xl overflow-hidden flex flex-col items-center justify-center">
+    <div className="relative w-full min-h-[320px] rounded-2xl overflow-hidden flex flex-col items-center justify-center">
       {/* Background image + gradient overlay */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -101,47 +101,47 @@ const DashboardTop = React.memo(() => {
         />
       </div>
       {/* Main content dengan z-index lebih tinggi */}
-      <div className="relative z-10 flex flex-row w-full max-w-4xl justify-between items-center mt-8 px-8">
+      <div className="relative z-10 flex flex-col md:flex-row w-full max-w-xs md:max-w-4xl justify-between items-center mt-4 md:mt-8 px-2 md:px-8 gap-4 md:gap-0">
         {/* Left: Average CPU Temp */}
         <div className="flex flex-col items-center text-white">
-          <Thermometer className="w-8 h-8 mb-2 opacity-80" strokeWidth={2.2} />
-          <span className="text-4xl font-extrabold drop-shadow-md tracking-tight">
+          <Thermometer className="w-6 h-6 md:w-8 md:h-8 mb-1 md:mb-2 opacity-80" strokeWidth={2.2} />
+          <span className="text-2xl md:text-4xl font-extrabold drop-shadow-md tracking-tight">
             {metrics.avgTemp ? metrics.avgTemp.toFixed(1) : "-"}
-            <span className="text-xl align-top">°C</span>
+            <span className="text-base md:text-xl align-top">°C</span>
           </span>
-          <span className="mt-1 text-base font-semibold tracking-wide opacity-80">AVERAGE CPU TEMP</span>
+          <span className="mt-1 text-xs md:text-base font-semibold tracking-wide opacity-80">AVERAGE CPU TEMP</span>
         </div>
         {/* Center: Inside Temp Circle */}
         <div className="flex flex-col items-center">
-          <div className="relative flex items-center justify-center" style={{ width: 220, height: 220 }}>
-            <svg width="220" height="220">
+          <div className="relative flex items-center justify-center w-28 h-28 md:w-[220px] md:h-[220px]">
+            <svg width="100%" height="100%" viewBox="0 0 140 140" className="w-28 h-28 md:w-[220px] md:h-[220px]">
               <defs>
                 <linearGradient id="tempGradient" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stopColor="#6EE7B7" />
                   <stop offset="100%" stopColor="#3B82F6" />
                 </linearGradient>
               </defs>
-              <circle cx="110" cy="110" r="100" stroke="#e5e7eb" strokeWidth="4" fill="none" opacity="0.3" />
-              <circle cx="110" cy="110" r="100" stroke="url(#tempGradient)" strokeWidth="6" fill="none" />
+              <circle cx="70" cy="70" r="64" stroke="#e5e7eb" strokeWidth="4" fill="none" opacity="0.3" />
+              <circle cx="70" cy="70" r="64" stroke="url(#tempGradient)" strokeWidth="6" fill="none" />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <HomeIcon className="w-8 h-8 text-white mb-2 opacity-90 drop-shadow" strokeWidth={2.2} />
-              <span className="text-6xl font-extrabold text-white drop-shadow-md tracking-tight mb-1" style={{letterSpacing: '-2px'}}>
+              <HomeIcon className="w-5 h-5 md:w-8 md:h-8 text-white mb-1 md:mb-2 opacity-90 drop-shadow" strokeWidth={2.2} />
+              <span className="text-3xl md:text-6xl font-extrabold text-white drop-shadow-md tracking-tight mb-1" style={{letterSpacing: '-2px'}}>
                 {sensorData?.temperature ? sensorData.temperature.toFixed(1) : "-"}
-                <span className="text-2xl align-top">°C</span>
+                <span className="text-base md:text-2xl align-top">°C</span>
               </span>
-              <span className="text-lg font-semibold text-white tracking-wide opacity-90 mt-1">INSIDE TEMP</span>
+              <span className="text-xs md:text-lg font-semibold text-white tracking-wide opacity-90 mt-1">INSIDE TEMP</span>
             </div>
           </div>
         </div>
         {/* Right: Humidity */}
         <div className="flex flex-col items-center text-white">
-          <Droplet className="w-8 h-8 mb-2 opacity-80" strokeWidth={2.2} />
-          <span className="text-4xl font-extrabold drop-shadow-md tracking-tight">
+          <Droplet className="w-6 h-6 md:w-8 md:h-8 mb-1 md:mb-2 opacity-80" strokeWidth={2.2} />
+          <span className="text-2xl md:text-4xl font-extrabold drop-shadow-md tracking-tight">
             {sensorData?.humidity ? sensorData.humidity.toFixed(1) : "-"}
-            <span className="text-xl align-top">%</span>
+            <span className="text-base md:text-xl align-top">%</span>
           </span>
-          <span className="mt-1 text-base font-semibold tracking-wide opacity-80">HUMIDITY</span>
+          <span className="mt-1 text-xs md:text-base font-semibold tracking-wide opacity-80">HUMIDITY</span>
         </div>
       </div>
     </div>
