@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AIDA64Provider } from "@/lib/aida64-context";
 
 import { FirebaseProvider } from "@/lib/firebase-context";
+import { SensorProvider } from "@/lib/firebase-sensor-context";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -28,7 +29,9 @@ export default function RootLayout({
         >
           <AIDA64Provider>
             <FirebaseProvider>
-              {children}
+              <SensorProvider>
+                {children}
+              </SensorProvider>
             </FirebaseProvider>
           </AIDA64Provider>
         </ThemeProvider>

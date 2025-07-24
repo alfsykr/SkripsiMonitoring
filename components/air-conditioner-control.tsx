@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronUp, ChevronDown, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
+import { database } from '../lib/firebaseConfig';
+import { ref, set, onValue } from 'firebase/database';
+import { useSensor } from '../lib/firebase-sensor-context';
 
 interface AirConditionerControlProps { }
+
+interface ACCommand {
+  command: number; // 1: toggle power, 2: temp up, 3: temp down
+  timestamp: number;
+}
 
 const AirConditionerControl: React.FC<AirConditionerControlProps> = () => {
   const [isOn, setIsOn] = useState(false);
@@ -10,16 +18,66 @@ const AirConditionerControl: React.FC<AirConditionerControlProps> = () => {
   const [fanSpeed, setFanSpeed] = useState(2);
   const [airSwing, setAirSwing] = useState(false);
   const [pidMode, setPidMode] = useState(false);
+  const [commandStatus, setCommandStatus] = useState<string>('');
+  const { sensorData } = useSensor();
 
-  const togglePower = () => setIsOn((v) => !v);
+  // Mengambil status AC dari Firebase jika ada
+  useEffect(() => {
+    const acStatusRef = ref(database, 'ac_status');
+    const unsubscribe = onValue(acStatusRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        if (data.power !== undefined) {
+          setIsOn(data.power);
+        }
+        if (data.temperature !== undefined) {
+          setTemperature(data.temperature);
+        }
+      }
+    });
+
+    return () => {
+      // Cleanup subscription
+      unsubscribe();
+    };
+  }, []);
+
+  // Fungsi untuk mengirim perintah ke Firebase
+  const sendCommand = (commandNumber: number) => {
+    const commandRef = ref(database, 'ac_command');
+    const command: ACCommand = {
+      command: commandNumber,
+      timestamp: Date.now()
+    };
+
+    set(commandRef, command)
+      .then(() => {
+        setCommandStatus(`Perintah ${commandNumber} berhasil dikirim`);
+        setTimeout(() => setCommandStatus(''), 3000); // Clear status after 3 seconds
+      })
+      .catch((error) => {
+        setCommandStatus(`Error: ${error.message}`);
+        console.error('Error sending command:', error);
+      });
+  };
+
+  const togglePower = () => {
+    setIsOn((v) => !v);
+    sendCommand(1); // Kirim perintah 1 untuk toggle power
+  };
+
   const toggleAirSwing = () => setAirSwing((v) => !v);
   const togglePidMode = () => setPidMode((v) => !v);
   const adjustFanSpeed = () => setFanSpeed((prev) => (prev === 3 ? 1 : prev + 1));
+  
   const adjustTemperature = (increment: boolean) => {
     setTemperature((prev) => {
       const newTemp = increment ? prev + 1 : prev - 1;
       return Math.max(16, Math.min(30, newTemp));
     });
+    
+    // Kirim perintah 2 untuk naik suhu atau 3 untuk turun suhu
+    sendCommand(increment ? 2 : 3);
   };
 
   return (
@@ -91,6 +149,30 @@ const AirConditionerControl: React.FC<AirConditionerControlProps> = () => {
               </div>
             </div>
           </div>
+          
+          {/* Current Temperature Display from Sensor */}
+          {sensorData && (
+            <div className="mt-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-xl">
+              <h3 className="text-lg font-medium mb-2">Sensor Data:</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">Suhu Ruangan:</p>
+                  <p className="text-2xl font-bold">{sensorData.temperature}°C</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Kelembaban:</p>
+                  <p className="text-2xl font-bold">{sensorData.humidity}%</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Command Status */}
+          {commandStatus && (
+            <div className="mt-4 p-3 bg-blue-100 text-blue-800 rounded-lg">
+              {commandStatus}
+            </div>
+          )}
         </div>
 
         {/* Footer */}
