@@ -9,7 +9,7 @@ import { SensorProvider } from "@/lib/firebase-sensor-context";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CPU Temperature Monitoring",
+  title: "Lab Room & Computer Temperature Monitoring",
   description: "Advanced CPU and Room Temperature Monitoring Dashboard",
   icons: {
     icon: [

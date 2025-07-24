@@ -22,8 +22,6 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-// Remove useScrollReveal function
-
 export default function CPUMonitoringPage() {
   const {
     cpuData,
@@ -39,24 +37,38 @@ export default function CPUMonitoringPage() {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setIsProcessing(true);
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const csvContent = e.target?.result as string;
-      setUploadedCsvContent(csvContent);
-      processAidaData(csvContent);
-      setAutoRefresh(true); // Enable auto-refresh when file is uploaded
-      setIsProcessing(false);
+      
+      try {
+        // Set CSV content first
+        setUploadedCsvContent(csvContent);
+        
+        // Process the data
+        await processAidaData(csvContent);
+        
+        // Enable auto-refresh
+        setAutoRefresh(true);
+        
+        console.log('File uploaded and processed successfully');
+      } catch (error) {
+        console.error('Error processing uploaded file:', error);
+      } finally {
+        setIsProcessing(false);
+      }
     };
     reader.readAsText(file);
   };
 
-  const handleSampleData = () => {
+  const handleSampleData = async () => {
     setIsProcessing(true);
+    
     const sampleData = `Version,AIDA64 v7.65.7400
 CPU Type,2C+8c Intel Core i5-1335U, 4300 MHz (43 x 100)
 Motherboard Name,Acer Aspire A514-56P
@@ -73,10 +85,22 @@ Date,Time,UpTime,CPU,CPU Package,CPU IA Cores,CPU GT Cores,HDD1
 6/5/2025,4:36:42 PM,05:04:48,58,52,52,49,37
 6/5/2025,4:36:43 PM,05:04:49,61,54,54,51,37`;
 
-    setUploadedCsvContent(sampleData);
-    processAidaData(sampleData);
-    setAutoRefresh(true); // Enable auto-refresh when sample data is used
-    setIsProcessing(false);
+    try {
+      // Set CSV content first
+      setUploadedCsvContent(sampleData);
+      
+      // Process the data
+      await processAidaData(sampleData);
+      
+      // Enable auto-refresh
+      setAutoRefresh(true);
+      
+      console.log('Sample data loaded successfully');
+    } catch (error) {
+      console.error('Error processing sample data:', error);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const toggleAutoRefresh = () => {
@@ -104,6 +128,28 @@ Date,Time,UpTime,CPU,CPU Package,CPU IA Cores,CPU GT Cores,HDD1
     });
   };
 
+  // PERBAIKAN: Gunakan data source langsung dari context metrics
+  const hasUploadedData = uploadedCsvContent && uploadedCsvContent.trim().length > 0;
+  
+  // Debug log untuk membantu troubleshooting
+  useEffect(() => {
+    console.log('Data status changed:', {
+      hasContent: !!uploadedCsvContent,
+      contentLength: uploadedCsvContent?.length || 0,
+      hasUploadedData,
+      cpuDataLength: cpuData.length,
+      metricsDataSource: metrics.dataSource,
+      isConnected,
+      metrics
+    });
+  }, [uploadedCsvContent, hasUploadedData, cpuData, metrics, isConnected]);
+  
+  // PERBAIKAN: Gunakan metrics.dataSource dari context
+  const isAIDA64Data = metrics.dataSource.includes('AIDA64') || hasUploadedData;
+  const currentDataSource = isAIDA64Data ? "AIDA64" : "Mock Data";
+  const dataSourceStatus = isAIDA64Data ? "Uploaded" : "Default";
+  const dataSourceColor = isAIDA64Data ? "green" : "red";
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -118,8 +164,9 @@ Date,Time,UpTime,CPU,CPU Package,CPU IA Cores,CPU GT Cores,HDD1
                     Real-time monitoring of individual CPU performance and temperature via AIDA64 CSV Upload
                   </p>
                   <div className="mt-2 flex items-center gap-2">
-                    <Badge variant={isConnected ? "default" : "secondary"}>
-                      {metrics.dataSource}
+                    {/* PERBAIKAN: Gunakan isAIDA64Data yang sudah diperbaiki */}
+                    <Badge variant={isAIDA64Data ? "default" : "secondary"}>
+                      {currentDataSource}
                     </Badge>
                     {autoRefresh && (
                       <Badge
@@ -129,7 +176,7 @@ Date,Time,UpTime,CPU,CPU Package,CPU IA Cores,CPU GT Cores,HDD1
                         Auto-Refresh Active
                       </Badge>
                     )}
-                    {uploadedCsvContent && (
+                    {isAIDA64Data && (
                       <span className="text-sm text-muted-foreground">
                         Last Update: {formatTime(lastUpdate)}
                       </span>
@@ -161,11 +208,22 @@ Date,Time,UpTime,CPU,CPU Package,CPU IA Cores,CPU GT Cores,HDD1
                         onClick={handleSampleData}
                         variant="secondary"
                         className="flex items-center gap-2"
+                        disabled={isProcessing}
                       >
-                        Use Sample Data
+                        {isProcessing ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                            Loading...
+                          </>
+                        ) : (
+                          <>
+                            <Database className="w-4 h-4" />
+                            Use Sample Data
+                          </>
+                        )}
                       </Button>
 
-                      {uploadedCsvContent && (
+                      {isAIDA64Data && (
                         <Button
                           onClick={toggleAutoRefresh}
                           variant={autoRefresh ? "default" : "outline"}
@@ -190,7 +248,7 @@ Date,Time,UpTime,CPU,CPU Package,CPU IA Cores,CPU GT Cores,HDD1
                     <p className="text-sm text-muted-foreground mt-2">
                       Upload your AIDA64 CSV log file to get real temperature data,
                       or use sample data for testing.
-                      {uploadedCsvContent &&
+                      {isAIDA64Data &&
                         " Auto-refresh will simulate live monitoring with data variations every 5 seconds."}
                     </p>
                   </CardContent>
@@ -255,13 +313,14 @@ Date,Time,UpTime,CPU,CPU Package,CPU IA Cores,CPU GT Cores,HDD1
                     }
                   />
 
+                  {/* PERBAIKAN: MetricCard Data Source menggunakan variabel yang sudah diperbaiki */}
                   <MetricCard
                     title="Data Source"
-                    value={isConnected ? "CSV Data" : "Mock Data"}
-                    status={isConnected ? "Uploaded" : "Default"}
-                    statusColor={isConnected ? "green" : "red"}
+                    value={currentDataSource}
+                    status={dataSourceStatus}
+                    statusColor={dataSourceColor}
                     icon={Database}
-                    iconColor={isConnected ? "green" : "red"}
+                    iconColor={dataSourceColor}
                   />
                 </div>
 

@@ -148,6 +148,8 @@ export function AIDA64Provider({ children }: { children: ReactNode }) {
       });
       
       setChartData(generateTemperatureChartData(initialData));
+      // PERBAIKAN: Set isConnected false untuk mock data
+      setIsConnected(false);
     }
   }, []);
 
@@ -167,6 +169,8 @@ export function AIDA64Provider({ children }: { children: ReactNode }) {
   // AIDA64 CSV Parser Function
   const processAidaData = (csvContent: string) => {
     try {
+      console.log('Processing AIDA64 data...');
+      
       const result = Papa.parse(csvContent, {
         header: false,
         skipEmptyLines: true,
@@ -245,13 +249,20 @@ export function AIDA64Provider({ children }: { children: ReactNode }) {
       const avgTemp = Math.round((totalTemp / allTemperatureData.length) * 10) / 10;
       const maxTemp = Math.round(Math.max(...allTemperatureData) * 10) / 10;
 
+      console.log('AIDA64 data processed successfully:', {
+        cpuDataLength: processedCpuData.length,
+        avgTemp,
+        maxTemp
+      });
+
       setCpuData(processedCpuData);
       setMetrics({
-        totalCPUs: 5,
+        totalCPUs: processedCpuData.length,
         avgTemp,
         maxTemp,
         dataSource: 'AIDA64 CSV'
       });
+      // PERBAIKAN: Set isConnected true ketika data berhasil diproses
       setIsConnected(true);
       setLastUpdate(new Date());
       
@@ -262,6 +273,7 @@ export function AIDA64Provider({ children }: { children: ReactNode }) {
       console.error('Error processing data:', error);
       alert(`Error: ${(error as Error).message}`);
       
+      // PERBAIKAN: Fallback ke mock data jika gagal
       const mockData = generateIndividualCPUData();
       setCpuData(mockData);
       
@@ -276,6 +288,8 @@ export function AIDA64Provider({ children }: { children: ReactNode }) {
         dataSource: 'Mock Data'
       });
       
+      // PERBAIKAN: Set isConnected false saat gagal
+      setIsConnected(false);
       setChartData(generateTemperatureChartData(mockData));
     }
   };
@@ -332,7 +346,7 @@ export function AIDA64Provider({ children }: { children: ReactNode }) {
 
       setCpuData(sensorData);
       setMetrics({
-        totalCPUs: 5,
+        totalCPUs: sensorData.length,
         avgTemp: Math.round(avgTemp * 10) / 10,
         maxTemp: Math.round(maxTemp * 10) / 10,
         dataSource: 'AIDA64 CSV (Live)'
